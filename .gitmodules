@@ -1,0 +1,3 @@
+[submodule "crazyflie-firmware-slam"]
+	path = crazyflie-firmware-slam
+	url = git@github.com:atomichighfive/crazyflie-firmware-slam.git

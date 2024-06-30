@@ -1,4 +1,6 @@
-opencv-python
+opencv-contrib-python
 numpy
 scipy
 torch
+plotly
+pandas
