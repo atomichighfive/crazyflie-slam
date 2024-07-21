@@ -1,3 +1,6 @@
 [submodule "crazyflie-firmware-slam"]
 	path = crazyflie-firmware-slam
 	url = git@github.com:atomichighfive/crazyflie-firmware-slam.git
+[submodule "aideck-firmware-slam"]
+	path = aideck-firmware-slam
+	url = git@github.com:atomichighfive/aideck-firmware-slam.git
