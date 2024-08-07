@@ -28,7 +28,36 @@ def main(n, p, save):
 
     imgHeader = read_bytes_from_socket(client_socket, length - 2)
 
-    [magic, width, height, depth, format, size] = struct.unpack('<BHHBBI', imgHeader)
+    image_data_spec = 'BHHBBI'
+    state_spec = 'BfffffffLfffLfffLfff'
+    [
+      magic,
+      width,
+      height,
+      depth,
+      format,
+      size,
+      state_request_id,
+      attitude_roll,
+      attitude_pitch,
+      attitude_yaw,
+      attitudeQuaternion_x,
+      attitudeQuaternion_y,
+      attitudeQuaternion_z,
+      attitudeQuaternion_w,
+      position_timestamp,
+      position_x,
+      position_y,
+      position_z,
+      velocity_timestamp,
+      velocity_x,
+      velocity_y,
+      velocity_z,
+      acceleration_timestamp,
+      acceleration_x,
+      acceleration_y,
+      acceleration_z
+    ] = struct.unpack('<' + image_data_spec + state_spec, imgHeader)
 
     if magic == 0xBC:
       imgStream = bytearray()
