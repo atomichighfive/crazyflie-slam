@@ -21,8 +21,7 @@ def main(n, p, save):
     output_path = Path(f"./output/image-streamer/{time.strftime('%Y%m%d-%H%M%S')}/")
     os.makedirs(output_path, exist_ok=False)
     logging.info(f"Saving output to {output_path}")
-  
-  count = 0
+
 
   transport_spec = 'HBB'
   image_data_spec = 'BHHBBI'
@@ -52,6 +51,7 @@ def main(n, p, save):
     'acceleration_z'
   ])
 
+  loop_counter = 0
   while(1):
     packetInfoRaw = read_bytes_from_socket(client_socket, struct.calcsize('<' + transport_spec))
     [length, routing, function] = struct.unpack('<' + transport_spec, packetInfoRaw)
@@ -106,6 +106,11 @@ def main(n, p, save):
         )
         """
 
+      if save:
+        output_file = output_path / f"img_{loop_counter:06d}.png"
+      else:
+        output_file = None
+
       new_row = pd.DataFrame.from_records([{
         'state_request_id': state_request_id,
         'attitude_roll': attitude_roll,
@@ -126,11 +131,15 @@ def main(n, p, save):
         'acceleration_timestamp': acceleration_timestamp,
         'acceleration_x': acceleration_x,
         'acceleration_y': acceleration_y,
-        'acceleration_z': acceleration_z
+        'acceleration_z': acceleration_z,
+        'output_file': output_file,
       }])
 
       state_df = pd.concat([state_df, new_row], ignore_index=True)
-      print(state_df.iloc[-1])
+      if loop_counter % 30 == 0:
+        print(state_df.tail(30))
+        if save:
+          state_df.to_csv(output_path / "state.csv", index=False)
 
       imgStream = dataStream[:]
 
@@ -139,11 +148,10 @@ def main(n, p, save):
       rgb_img = cv2.cvtColor(bayer_img, cv2.COLOR_BayerBG2RGB)
       cv2.imshow('Image', rgb_img)
       if args.save:
-        output_file = output_path / f"img_{count:06d}.png"
         cv2.imwrite(output_file, rgb_img)
         logging.info(f"Wrote {output_file}")
       cv2.waitKey(1)
-      count += 1
+      loop_counter += 1
 
 
 def read_bytes_from_socket(socket, size):
